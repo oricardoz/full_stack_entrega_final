@@ -26,7 +26,6 @@
     <Folder Include="Dtos\" />
     <Folder Include="Endpoints\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
