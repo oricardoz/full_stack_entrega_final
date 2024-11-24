@@ -1,4 +1,5 @@
 using System;
+using ApiFullStack.Models;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -6,6 +7,8 @@ namespace ApiFullStack.Infra;
 
 public class ApiContext : DbContext
 {
+
+    public DbSet<Produtos> Produtos { get; set; } 
 
     public ApiContext()
     {
