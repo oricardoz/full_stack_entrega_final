@@ -10,6 +10,8 @@ public class ApiContext : DbContext
 
     public DbSet<Produtos> Produtos { get; set; } 
 
+    public DbSet<Usuario> Usuarios { get; set; }
+
     public ApiContext()
     {
         caminho = @$"{AppDomain.CurrentDomain.BaseDirectory}\produtos.db";
