@@ -12,14 +12,14 @@ public static class ProdutoEndpoints
 
     public static void AdicionarEndpointsProdutos(this WebApplication app)
     {
-        var grupo = app.MapGroup("/produtos");
+        var grupo = app.MapGroup("/produtos").RequireAuthorization();
 
         // Operações de CRUD
         grupo.MapGet("/", GetAsync);                  
-        grupo.MapGet("/{id}", GetByIdAsync);          
-        grupo.MapPost("/", PostAsync);                
-        grupo.MapPut("/{id}", PutAsync);              
-        grupo.MapDelete("/{id}", DeleteAsync);       
+        grupo.MapGet("/{id}", GetByIdAsync);    
+        grupo.MapPost("/", PostAsync);                 
+        grupo.MapPut("/{id}", PutAsync);             
+        grupo.MapDelete("/{id}", DeleteAsync);      
     }
 
     private static async Task<IResult> GetAsync(ApiContext db)
@@ -42,14 +42,22 @@ public static class ProdutoEndpoints
 
     private static async Task<IResult> PostAsync(ApiContext db, ProdutoDTO dto)
     {
+    
+        var galpao = await db.Galpoes.FindAsync(dto.GalpaoId);
+        if (galpao == null)
+        {
+            return TypedResults.BadRequest("O Galpão especificado não existe.");
+        }
+
         Produtos obj = dto.GetModel();
-        obj.Id = GeradorId.GetId(); // Gerar ID único
+        obj.Id = GeradorId.GetId();
+        obj.GalpaoId = dto.GalpaoId; 
+
         await db.Produtos.AddAsync(obj);
         await db.SaveChangesAsync();
 
         return TypedResults.Created($"/produtos/{obj.Id}", new ProdutoDTO(obj));
     }
-
     private static async Task<IResult> PutAsync(long id, ApiContext db, ProdutoDTO dto)
     {
         var obj = await db.Produtos.FindAsync(id);
@@ -60,7 +68,7 @@ public static class ProdutoEndpoints
         }
 
         dto.PreencherModel(obj);
-        obj.Id = id; // Garantir que o ID não seja alterado
+        obj.Id = id;
         await db.SaveChangesAsync();
 
         return TypedResults.Ok(new ProdutoDTO(obj));
@@ -78,6 +86,6 @@ public static class ProdutoEndpoints
         db.Produtos.Remove(obj);
         await db.SaveChangesAsync();
 
-        return TypedResults.NoContent(); // Deletado com sucesso
+        return TypedResults.NoContent(); 
     }
 }

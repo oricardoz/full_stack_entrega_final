@@ -27,16 +27,21 @@ builder.Services.AddSingleton<TokenService>();
 builder.Services.AddCors();
 
 builder.Services.AddAuthentication(x => {
+
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    
 }).AddJwtBearer(x => {
+
     x.SaveToken = true;
     x.TokenValidationParameters = new TokenValidationParameters
     {
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Config.Instancia.ChavePrivada)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Config.Instancia.ChavePrivada ?? "")),
+
         ValidateIssuer = false,
         ValidateAudience = false
     };
+
     x.Events = new JwtBearerEvents
     {
         OnMessageReceived = ctx =>
@@ -51,8 +56,8 @@ builder.Services.AddAuthentication(x => {
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("admin", x => x.RequireRole("admin"))
-    .AddPolicy("comum", x => x.RequireRole("comum"))
-    .AddPolicy("adminOuComum", policy => policy.RequireClaim(ClaimTypes.Role, "admin", "comum"));
+    .AddPolicy("cliente", x => x.RequireRole("cliente"))
+    .AddPolicy("adminOuCliente", policy => policy.RequireRole("admin", "cliente"));
 
 var app = builder.Build();
 
@@ -64,6 +69,7 @@ if(app.Environment.IsDevelopment())
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()
+    .AllowAnyOrigin()
     .AllowAnyHeader()
     .AllowAnyMethod()
 );
@@ -74,5 +80,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.AdicionarEndpointUsuarios();
+app.AdicionarEndpointsProdutos();
+app.AdicionarLoginEndpoint();
+app.AdicionarEndpointsGalpoes();
 
 app.Run();

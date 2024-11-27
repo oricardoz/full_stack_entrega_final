@@ -17,6 +17,7 @@ public static class LoginEndpoint
 
         grupo.MapPost("/app", PostLoginAppAsync);
         grupo.MapPost("/navegador", PostLoginNavegadorAsync);
+        grupo.MapGet("/logout", GetLogoutNavegador);
     }
 
     private static async Task<IResult> PostLoginAppAsync(LoginDTO infoLogin, ApiContext db, IPasswordHasher<Usuario> hasher)
@@ -45,9 +46,16 @@ public static class LoginEndpoint
             token, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Secure = true
+                SameSite = SameSiteMode.None,
+                Secure = true // Certifique-se de que o cookie é seguro
             });
+
+        return TypedResults.Ok();
+    }
+
+    private static IResult GetLogoutNavegador(HttpContext contexto)
+    {
+        contexto.Response.Cookies.Delete("acessToken");
 
         return TypedResults.Ok();
     }

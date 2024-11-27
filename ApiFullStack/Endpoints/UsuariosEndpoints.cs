@@ -42,11 +42,12 @@ public static class UsuariosEndpoints
         return TypedResults.Ok(new UsuarioDTO(obj)); 
     }
 
-     private static async Task<IResult> PostAsync(UsuarioDTO dto, ApiContext db)
+    private static async Task<IResult> PostAsync(UsuarioDTO dto, ApiContext db, IPasswordHasher<Usuario> hasher)
     {
         Usuario obj = dto.GetModel();
         obj.Id =  GeradorId.GetId();
         obj.Role = "comum";
+        obj.HashSenha = hasher.HashPassword(obj, obj.HashSenha);
         await db.Usuarios.AddAsync(obj);
         await db.SaveChangesAsync();
 
@@ -54,11 +55,12 @@ public static class UsuariosEndpoints
 
     }
 
-        private static async Task<IResult> PostAsyncAdmin(UsuarioDTO dto, ApiContext db)
+    private static async Task<IResult> PostAsyncAdmin(UsuarioDTO dto, ApiContext db, IPasswordHasher<Usuario> hasher)
     {
         Usuario obj = dto.GetModel();
         obj.Id =  GeradorId.GetId();
         obj.Role = "admin";
+        obj.HashSenha = hasher.HashPassword(obj, obj.HashSenha);
         await db.Usuarios.AddAsync(obj);
         await db.SaveChangesAsync();
 

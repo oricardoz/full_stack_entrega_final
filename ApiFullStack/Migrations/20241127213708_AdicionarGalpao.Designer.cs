@@ -3,6 +3,7 @@ using System;
 using ApiFullStack.Infra;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiFullStack.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    partial class ApiContextModelSnapshot : ModelSnapshot
+    [Migration("20241127213708_AdicionarGalpao")]
+    partial class AdicionarGalpao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -45,7 +48,7 @@ namespace ApiFullStack.Migrations
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("GalpaoId")
+                    b.Property<long?>("GalpaoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Nome")
@@ -96,9 +99,7 @@ namespace ApiFullStack.Migrations
                 {
                     b.HasOne("ApiFullStack.Models.Galpao", null)
                         .WithMany("Produtos")
-                        .HasForeignKey("GalpaoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GalpaoId");
                 });
 
             modelBuilder.Entity("ApiFullStack.Models.Galpao", b =>

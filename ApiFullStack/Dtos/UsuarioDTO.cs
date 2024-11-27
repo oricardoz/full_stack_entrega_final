@@ -19,6 +19,8 @@ public class UsuarioDTO
     {
         Id = obj.Id.ToString();
         Nome = obj.Nome;
+        Email = obj.Email;
+        HashSenha = obj.HashSenha;
     }
     public Usuario GetModel()
     {
@@ -33,6 +35,7 @@ public class UsuarioDTO
         obj.Id = id;
         obj.Nome = this.Nome;
         obj.Email = this.Email;
+        obj.HashSenha = this.HashSenha;
     }
 
 }

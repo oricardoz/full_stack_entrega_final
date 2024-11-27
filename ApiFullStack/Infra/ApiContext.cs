@@ -12,6 +12,8 @@ public class ApiContext : DbContext
 
     public DbSet<Usuario> Usuarios { get; set; }
 
+    public DbSet<Galpao> Galpoes { get; set; }
+
     public ApiContext()
     {
         caminho = @$"{AppDomain.CurrentDomain.BaseDirectory}\produtos.db";
