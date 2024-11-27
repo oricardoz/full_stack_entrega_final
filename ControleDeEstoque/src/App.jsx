@@ -3,18 +3,19 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ListPage from './pages/ListPage';
 import CreatePage from './pages/CreatePage';
 import EditPage from './pages/EditPage';
+import Layout from './components/Layout';
 
 const App = () => {
   return (
     <Router>
-    <div className="container mt-4">
       <Routes>
-        <Route path="/" element={<ListPage />} />
-        <Route path="/create" element={<CreatePage />} />
-        <Route path="/edit/:id" element={<EditPage />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<ListPage />} />
+          <Route path="create" element={<CreatePage />} />
+          <Route path="edit/:id" element={<EditPage />} />
+        </Route>
       </Routes>
-    </div>
-  </Router>
+    </Router>
   );
 };
 
