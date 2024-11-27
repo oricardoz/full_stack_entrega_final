@@ -8,10 +8,10 @@ public class Produtos
 
     public string Nome { get; set; } = string.Empty;
 
-    public string Descricao { get; set; } = string.Empty;
-
-    public double Preco { get; set; }
+    public double ValorUnitario { get; set; }
 
     public int Quantidade { get; set; }
+
+    public DateTime DataCadastro { get; set; }
 
 }
