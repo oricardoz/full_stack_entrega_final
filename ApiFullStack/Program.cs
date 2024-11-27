@@ -4,6 +4,7 @@ using ApiFullStack;
 using ApiFullStack.Endpoints;
 using ApiFullStack.Infra;
 using ApiFullStack.Models;
+using ApiFullStack.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +21,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApiContext>();
 builder.Services.AddSingleton<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
+builder.Services.AddSingleton<TokenService>();
+
 
 builder.Services.AddCors();
 
