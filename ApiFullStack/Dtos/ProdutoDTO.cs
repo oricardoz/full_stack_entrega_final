@@ -11,7 +11,7 @@ public class ProdutoDTO
     public double ValorUnitario { get; set; }
     public double ValorTotal => Quantidade * ValorUnitario; 
     public string DataCadastro { get; set; } = string.Empty;
-    public long GalpaoId { get; set; }
+    public string GalpaoId { get; set; }
 
     // Construtor vazio para o System.Text.Json
     public ProdutoDTO() { }
@@ -24,7 +24,7 @@ public class ProdutoDTO
         Quantidade = obj.Quantidade;
         ValorUnitario = obj.ValorUnitario;
         DataCadastro = obj.DataCadastro.ToString("yyyy-MM-dd HH:mm:ss");
-        GalpaoId = obj.GalpaoId; // Ensure this line is correct
+        GalpaoId = obj.GalpaoId.ToString(); 
     }
     public void PreencherModel(Produtos obj)
     {
@@ -32,7 +32,7 @@ public class ProdutoDTO
         obj.Nome = Nome;
         obj.Quantidade = Quantidade;
         obj.ValorUnitario = ValorUnitario;
-        obj.GalpaoId = GalpaoId; // Ensure this line is correct
+        obj.GalpaoId = long.TryParse(GalpaoId, out long galpaoId) ? galpaoId : 0;
     }
 
     public Produtos GetModel()

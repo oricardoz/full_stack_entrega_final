@@ -25,12 +25,12 @@ public static class ProdutoEndpoints
     private static async Task<IResult> GetAsync(ApiContext db)
     {
         var obj = await db.Produtos.ToListAsync();
-        return TypedResults.Ok(obj);
+        return TypedResults.Ok(obj.Select(x => new ProdutoDTO(x)));
     }
 
-    private static async Task<IResult> GetByIdAsync(long id, ApiContext db)
+    private static async Task<IResult> GetByIdAsync(string id, ApiContext db)
     {
-        var obj = await db.Produtos.FindAsync(id);
+        var obj = await db.Produtos.FindAsync(Convert.ToInt64(id));
 
         if (obj == null)
         {
@@ -41,26 +41,30 @@ public static class ProdutoEndpoints
     }
 
     private static async Task<IResult> PostAsync(ApiContext db, ProdutoDTO dto)
+{
+    if (!long.TryParse(dto.GalpaoId, out long galpaoId))
     {
-    
-        var galpao = await db.Galpoes.FindAsync(dto.GalpaoId);
-        if (galpao == null)
-        {
-            return TypedResults.BadRequest("O Galpão especificado não existe.");
-        }
-
-        Produtos obj = dto.GetModel();
-        obj.Id = GeradorId.GetId();
-        obj.GalpaoId = dto.GalpaoId; 
-
-        await db.Produtos.AddAsync(obj);
-        await db.SaveChangesAsync();
-
-        return TypedResults.Created($"/produtos/{obj.Id}", new ProdutoDTO(obj));
+        return TypedResults.BadRequest("O Galpão especificado não é válido.");
     }
-    private static async Task<IResult> PutAsync(long id, ApiContext db, ProdutoDTO dto)
+
+    var galpao = await db.Galpoes.FindAsync(galpaoId);
+
+    if (galpao == null)
     {
-        var obj = await db.Produtos.FindAsync(id);
+        return TypedResults.BadRequest("O Galpão especificado não existe.");
+    }
+
+    Produtos obj = dto.GetModel();
+    obj.Id = GeradorId.GetId();
+    obj.GalpaoId = galpaoId;
+
+    await db.Produtos.AddAsync(obj);
+    await db.SaveChangesAsync();
+
+    return TypedResults.Created($"/produtos/{obj.Id}", new ProdutoDTO(obj));
+}    private static async Task<IResult> PutAsync(string id, ApiContext db, ProdutoDTO dto)
+    {
+        var obj = await db.Produtos.FindAsync(Convert.ToInt64(id));
 
         if (obj == null)
         {
@@ -68,15 +72,16 @@ public static class ProdutoEndpoints
         }
 
         dto.PreencherModel(obj);
-        obj.Id = id;
+        obj.Id = Convert.ToInt64(id);
+        db.Update(obj);
         await db.SaveChangesAsync();
 
         return TypedResults.Ok(new ProdutoDTO(obj));
     }
 
-    private static async Task<IResult> DeleteAsync(long id, ApiContext db)
+    private static async Task<IResult> DeleteAsync(string id, ApiContext db)
     {
-        var obj = await db.Produtos.FindAsync(id);
+        var obj = await db.Produtos.FindAsync(Convert.ToInt64(id));
 
         if (obj == null)
         {

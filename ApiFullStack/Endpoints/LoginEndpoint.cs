@@ -47,10 +47,10 @@ public static class LoginEndpoint
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
-                Secure = true // Certifique-se de que o cookie é seguro
+                Secure = true
             });
 
-        return TypedResults.Ok();
+        return TypedResults.Ok(usuario); // Return the user data
     }
 
     private static IResult GetLogoutNavegador(HttpContext contexto)

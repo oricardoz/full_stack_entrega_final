@@ -68,10 +68,10 @@ if(app.Environment.IsDevelopment())
 }
 
 app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    .AllowAnyOrigin()
+    .WithOrigins("http://localhost:5173") // Specify allowed origins
     .AllowAnyHeader()
     .AllowAnyMethod()
+    .AllowCredentials() // Allow credentials
 );
 
 app.UseHttpsRedirection();

@@ -20,7 +20,6 @@ public static class UsuariosEndpoints
         grupo.MapGet("/{Id}", GetByIdAsync );
         grupo.MapPost("/", PostAsync );
         grupo.MapPost("/admin", PostAsyncAdmin );
-        grupo.MapPost("/login", LoginAsync);
         grupo.MapDelete("/{Id}", DeleteAsync );
         grupo.MapPut("/{Id}", PutAsync );
 
@@ -99,15 +98,4 @@ public static class UsuariosEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<IResult> LoginAsync(LoginDTO dto, ApiContext db, TokenService tokenService)
-    {
-        var user = await db.Usuarios.SingleOrDefaultAsync(u => u.Email == dto.Email);
-        if (user == null || user.HashSenha != dto.HashSenha)
-        {
-            return TypedResults.Unauthorized();
-        }
-
-        var token = tokenService.Gerar(user);
-        return TypedResults.Ok(new { Token = token });
-    }
 }

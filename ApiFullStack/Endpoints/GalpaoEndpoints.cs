@@ -1,4 +1,3 @@
-
 using System;
 using ApiFullStack.Dtos;
 using ApiFullStack.Infra;
@@ -25,12 +24,12 @@ public static class GalpaoEndpoints
     private static async Task<IResult> GetAsync(ApiContext db)
     {
         var obj = await db.Galpoes.Include(g => g.Produtos).ToListAsync();
-        return TypedResults.Ok(obj);
+        return TypedResults.Ok(obj.Select(x => new GalpaoDTO(x)));
     }
 
-    private static async Task<IResult> GetByIdAsync(long id, ApiContext db)
+    private static async Task<IResult> GetByIdAsync(string id, ApiContext db)
     {
-        var obj = await db.Galpoes.Include(g => g.Produtos).FirstOrDefaultAsync(g => g.Id == id);
+        var obj = await db.Galpoes.Include(g => g.Produtos).FirstOrDefaultAsync(g => g.Id == Convert.ToInt64(id));  
 
         if (obj == null)
         {
@@ -41,24 +40,34 @@ public static class GalpaoEndpoints
     }
 
     private static async Task<IResult> PostAsync(ApiContext db, GalpaoDTO dto)
-{
-    var obj = dto.GetModel();
 
-    if (dto.Produtos == null || !dto.Produtos.Any())
-    {
-        obj.Produtos = new List<Produtos>();
+        return TypedResults.Ok(new GalpaoDTO(obj));
     }
 
-    obj.Id = GeradorId.GetId(); 
-    await db.Galpoes.AddAsync(obj);
-    await db.SaveChangesAsync();
-
-    return TypedResults.Created($"/galpoes/{obj.Id}", new GalpaoDTO(obj));
-}
-
-    private static async Task<IResult> PutAsync(long id, ApiContext db, GalpaoDTO dto)
+    private static async Task<IResult> PostAsync(ApiContext db, GalpaoDTO dto)
     {
-        var obj = await db.Galpoes.FindAsync(id);
+        var obj = dto.GetModel();
+
+        if (dto.Produtos == null || !dto.Produtos.Any())
+        {
+            obj.Produtos = new List<Produtos>();
+        }
+
+        obj.Id = GeradorId.GetId(); 
+        await db.Galpoes.AddAsync(obj);
+        await db.SaveChangesAsync();
+
+        return TypedResults.Created($"/galpoes/{obj.Id}", new GalpaoDTO(obj));
+    }
+
+    private static async Task<IResult> PutAsync(string id, ApiContext db, GalpaoDTO dto)
+    {
+        if (!long.TryParse(id, out var longId))
+        {
+            return TypedResults.BadRequest("Invalid ID format");
+        }
+
+        var obj = await db.Galpoes.FindAsync(longId);
 
         if (obj == null)
         {
@@ -66,15 +75,22 @@ public static class GalpaoEndpoints
         }
 
         dto.PreencherModel(obj);
-        obj.Id = id;
+
+        db.Update(obj);
+        obj.Id = longId;
         await db.SaveChangesAsync();
 
         return TypedResults.Ok(new GalpaoDTO(obj));
     }
 
-    private static async Task<IResult> DeleteAsync(long id, ApiContext db)
+    private static async Task<IResult> DeleteAsync(string id, ApiContext db)
     {
-        var obj = await db.Galpoes.FindAsync(id);
+        if (!long.TryParse(id, out var longId))
+        {
+            return TypedResults.BadRequest("Invalid ID format");
+        }
+
+        var obj = await db.Galpoes.FindAsync(longId);
 
         if (obj == null)
         {

@@ -1,43 +1,48 @@
-import React from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { UsuarioContext } from "../UsuarioContext";
+import BarraNavegacao from "./BarraNavegacao";
+import Login from "./auth/Login";
 
-function Layout() {
-  const navigate = useNavigate();
+const Layout = () => {
+  let usuarioLocalStorage;
+  try {
+    usuarioLocalStorage = JSON.parse(localStorage.getItem("usuario"));
+  } catch {
+    usuarioLocalStorage = null;
+  }
 
-  const handleLogout = () => {
-    console.log('Usuário deslogado');
-    navigate('/');
+  const [falha, setFalha] = useState(null);
+  const [usuario, setUsuario] = useState(usuarioLocalStorage);
+
+  const gravarUsuario = (usuario) => {
+    try {
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+    } catch {
+      localStorage.setItem("usuario", null);
+    }
+    setUsuario(usuario);
   };
 
+  let mensagemFalha = null;
+
+  if (falha) {
+    mensagemFalha = <div className="alert alert-danger">{falha}</div>;
+  }
+
+  const apenasLogin = !usuario;
+
   return (
-    <div>
-      {/* Menu */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div className="container-fluid">
-          <Link to="/" className="navbar-brand">Meu App</Link>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav me-auto">
-              <li className="nav-item">
-                <Link to="/" className="nav-link">Home</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/" className="nav-link">Listar Produtos</Link>
-              </li>
-            </ul>
-            <button className="btn btn-outline-danger" onClick={handleLogout}>Sair</button>
-          </div>
+    <UsuarioContext.Provider value={[usuario, gravarUsuario]}>
+      <React.Fragment>
+        <BarraNavegacao setFalha={setFalha} />
+        {mensagemFalha}
+        {apenasLogin ? <Login reportarSucesso={gravarUsuario} /> : null}
+        <div style={{ visibility: apenasLogin ? "hidden" : "visible" }}>
+          <Outlet />
         </div>
-      </nav>
-
-      {/* Área de conteúdo */}
-      <div className="container mt-4">
-        <Outlet />
-      </div>
-    </div>
+      </React.Fragment>
+    </UsuarioContext.Provider>
   );
-}
-
+};
 export default Layout;
