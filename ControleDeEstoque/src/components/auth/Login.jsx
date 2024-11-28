@@ -32,31 +32,36 @@ const Login = () => {
   }
 
   return (
-    <div className="login-wrapper">
-      <div className="login-container">
+    <div className="login-wrapper d-flex align-items-start justify-content-center vh-100 pt-5">
+      <div
+        className="login-container bg-light p-5 rounded shadow-lg"
+        style={{ width: "400px" }}
+      >
         {mensagemFalha}
         <div className="login-form-container">
           <form className="login-form">
-            <h3 className="login-title">Login</h3>
-            <div className="form-group">
+            <h3 className="login-title text-center mb-4">Login</h3>
+            <div className="form-group mb-3">
               <label className="form-label">E-mail</label>
               <input
                 className="form-control"
                 value={objeto.matricula}
                 onChange={(e) => atualizarCampo("email", e.target.value)}
                 type="email"
+                placeholder="Digite seu e-mail"
               />
             </div>
-            <div className="form-group">
+            <div className="form-group mb-4">
               <label className="form-label">Senha</label>
               <input
                 className="form-control"
                 value={objeto.senha}
                 onChange={(e) => atualizarCampo("senha", e.target.value)}
                 type="password"
+                placeholder="Digite sua senha"
               />
             </div>
-            <button className="btn btn-primary mt-2" onClick={(e) => login(e)}>
+            <button className="btn btn-primary w-100" onClick={(e) => login(e)}>
               Login
             </button>
           </form>

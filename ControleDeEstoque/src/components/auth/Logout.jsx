@@ -20,9 +20,11 @@ const Logout = ({ setFalha }) => {
   if (nomeUsuario) {
     return (
       <div style={{ display: "flex", alignItems: "center" }}>
-        <label style={{ marginRight: "10px" }}>Usuário: {nomeUsuario}</label>
+        <label style={{ marginRight: "10px", color: "white" }}>
+          Usuário: {nomeUsuario}
+        </label>
         <button
-          className="btn btn-outline-danger m-2"
+          className="btn btn-primary m-2"
           onClick={realizarLogout}
           style={{ padding: "5px 10px", cursor: "pointer" }}
         >
